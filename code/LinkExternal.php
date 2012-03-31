@@ -11,13 +11,12 @@ class LinkExternal extends DataObject{
 	static $summary_fields = array(
 		'Text',
 		'Url',
-		'Type',
-		'SocialNetwork'
+		'Reference'
 	);
 
 	static $searchable_fields = array(
 		'Text',
-		'Url',
+		'URL',
 		'Type',
 		'SocialNetwork'
 	);
@@ -29,6 +28,13 @@ class LinkExternal extends DataObject{
 		'Wordpress'	=>	'wordpress',
 		'LinkedIn'	=>	'linkedin'
 	);
+
+	public function getReference(){
+		if($this->Type==='SocialNetwork'){
+			return $this->SocialNetwork;
+		}
+		return $this->Type;
+	}
 
 	protected function onBeforeWrite() {
 		$url = $this->Url;
@@ -49,10 +55,13 @@ class LinkExternal extends DataObject{
 	public function  getCMSFields($params = null) {
 		$fieldSet = new FieldSet();
 		$fieldSet->push(new TabSet('Root','Root',new TabSet('Content')),'Root');
-		$fields = new FieldSet();
-		$_fields = $this->_getFields();
-		foreach($_fields as $f){$fields->push($f);}
-		$fieldSet->addFieldsToTab('Root.Content.Main', $fields);
+		$fields = $this->_getFields($params);
+		foreach($fields as $tab=>$tabset){
+			$fieldSet->addFieldToTab('Root.Content',new Tab($tab));
+			foreach($tabset as $name=>$field){
+				$fieldSet->addFieldToTab('Root.Content.'.$tab,$field);
+			}
+		}
         return $fieldSet;
 	}
 
@@ -60,7 +69,7 @@ class LinkExternal extends DataObject{
 		return array(
 			'Main'		=>	array(
 				'Text'		=>	new TextField('Text','Url Text'),
-				'Url'		=>	new UrlField('Url', 'Url Link'),
+				'URL'		=>	new UrlField('URL', 'Url Link'),
 				'Type'		=>	new DropdownField('Type', 'Url Type', $this->dbObject('Type')->enumValues(),null,null,'Please Choose an URL type'),
 			),
 		);
