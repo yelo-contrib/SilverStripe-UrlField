@@ -10,8 +10,9 @@ class LinkExternal extends DataObject{
 
 	static $summary_fields = array(
 		'Text',
-		'Url',
-		'Reference'
+		'URL',
+		'Reference',
+		'SocialNetwork'
 	);
 
 	static $searchable_fields = array(
@@ -26,7 +27,8 @@ class LinkExternal extends DataObject{
 		'Twitter'	=>	'twitter',
 		'Blogger'	=>	'blogger',
 		'Wordpress'	=>	'wordpress',
-		'LinkedIn'	=>	'linkedin'
+		'LinkedIn'	=>	'linkedin',
+		'Twitter'	=>	'twitter'
 	);
 
 	public function getReference(){
@@ -37,7 +39,7 @@ class LinkExternal extends DataObject{
 	}
 
 	protected function onBeforeWrite() {
-		$url = $this->Url;
+		$url = $this->URL;
 		$type = $this->Type;
 		if($type=='SocialNetwork'){
 			$patterns = self::$_socialNetworksPatterns;
@@ -48,7 +50,7 @@ class LinkExternal extends DataObject{
 				}
 			}
 		}
-		if(!$this->Text){$this->Text = $this->Url;}
+		if(!$this->Text){$this->Text = $this->URL;}
 		parent::onBeforeWrite();
 	}
 
@@ -70,21 +72,26 @@ class LinkExternal extends DataObject{
 			'Main'		=>	array(
 				'Text'		=>	new TextField('Text','Url Text'),
 				'URL'		=>	new UrlField('URL', 'Url Link'),
-				'Type'		=>	new DropdownField('Type', 'Url Type', $this->dbObject('Type')->enumValues(),null,null,'Please Choose an URL type'),
+				'Type'		=>	new DropdownField('Type', 'Url Type', $this->dbObject('Type')->enumValues(),null,null,'Please Choose an Url type'),
 			),
 		);
 	}
 
 	public function HTMLClasses(){
-		return 'ExternalLink '.$this->Type.($this->SocialNetwork? ' '.$this->SocialNetwork : '');
+		return 'ExternalLink '.strtolower($this->Type).($this->SocialNetwork? ' '.strtolower($this->SocialNetwork) : '');
 	}
 
 	public function Link(){
-		return '<a href="'.$this->Url.'" classes="'.$this->HTMLClasses().'">'.$this->Text.'</a>';
+		return '<a href="'.$this->URL.'" class="'.$this->HTMLClasses().'" target="_blank" title="'.$this->Text.'">'.$this->Text.'</a>';
 	}
 
 	public function LinkURL(){
-		return '<a href="'.$this->Url.'" classes="'.$this->HTMLClasses().'">'.str_replace(array('http://','https://'),'',$this->Url).'</a>';
+		return '<a href="'.$this->URL.'" class="'.$this->HTMLClasses().'" target="_blank" title="'.$this->Text.'">'.str_replace(array('http://','https://'),'',$this->URL).'</a>';
 	}
 
+	public function canEdit(){return true;}
+	public function canCreate(){return true;}
+	public function canDelete(){return true;}
+	public function canPublish(){return true;}
+	
 }
