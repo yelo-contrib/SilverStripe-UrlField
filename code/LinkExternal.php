@@ -54,6 +54,19 @@ class LinkExternal extends DataObject{
 		parent::onBeforeWrite();
 	}
 
+	public function getCMSFields_forPopup($params = null){
+		$fieldSet = new FieldSet();
+		$fieldSet->push(new TabSet('Content'));
+		$fields = $this->_getFields($params);
+		foreach($fields as $tab=>$tabset){
+			$fieldSet->addFieldToTab('Content',new Tab($tab));
+			foreach($tabset as $name=>$field){
+				$fieldSet->addFieldToTab('Content.'.$tab,$field);
+			}
+		}
+        return $fieldSet;
+	}
+
 	public function  getCMSFields($params = null) {
 		$fieldSet = new FieldSet();
 		$fieldSet->push(new TabSet('Root','Root',new TabSet('Content')),'Root');
