@@ -38,6 +38,38 @@ class LinkExternal extends DataObject{
 		return $this->Type;
 	}
 
+  protected function _providePermissionsArray($c=null){
+    if(!$c){$c = $this->class;};
+    $perms = array();
+    $titles = array(
+      'CREATE'=> 'Create'
+    ,	'VIEW'	=> 'View'
+    ,	'EDIT'=> 'Edit'
+    ,	'DELETE'=> 'Delete'
+    ,	'PUBLISH'=> 'Publish'
+    );
+    foreach ($titles as $key => $value) {
+      $name = $c.'_'.$key;
+      $niceName = ucfirst($c);
+      $perms[$name] = array(
+        'name' => _t(
+          'Permission.'.$name,
+          $value.' '.$niceName
+        )
+      ,	'category' => _t(
+          'Permission.CATEGORY_'.$c,
+          $niceName
+        )
+      ,	'help' => _t(
+          'Permission.'.$name.'_HELP',
+          'Allows the user to '.$value.' '.$niceName
+        )
+      ,	'sort' => 100
+      );
+    }
+    return $perms;
+  }
+
 	protected function onBeforeWrite() {
 		$url = $this->URL;
 		$type = $this->Type;
@@ -106,5 +138,5 @@ class LinkExternal extends DataObject{
 	public function canCreate(){return true;}
 	public function canDelete(){return true;}
 	public function canPublish(){return true;}
-	
+
 }
