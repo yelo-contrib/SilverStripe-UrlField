@@ -38,6 +38,38 @@ class LinkExternal extends DataObject{
 		return $this->Type;
 	}
 
+  protected function _providePermissionsArray($c=null){
+    if(!$c){$c = $this->class;};
+    $perms = array();
+    $titles = array(
+      'CREATE'=> 'Create'
+    ,	'VIEW'	=> 'View'
+    ,	'EDIT'=> 'Edit'
+    ,	'DELETE'=> 'Delete'
+    ,	'PUBLISH'=> 'Publish'
+    );
+    foreach ($titles as $key => $value) {
+      $name = $c.'_'.$key;
+      $niceName = ucfirst($c);
+      $perms[$name] = array(
+        'name' => _t(
+          'Permission.'.$name,
+          $value.' '.$niceName
+        )
+      ,	'category' => _t(
+          'Permission.CATEGORY_'.$c,
+          $niceName
+        )
+      ,	'help' => _t(
+          'Permission.'.$name.'_HELP',
+          'Allows the user to '.$value.' '.$niceName
+        )
+      ,	'sort' => 100
+      );
+    }
+    return $perms;
+  }
+
 	protected function onBeforeWrite() {
 		$url = $this->URL;
 		$type = $this->Type;
@@ -102,6 +134,7 @@ class LinkExternal extends DataObject{
 		return '<a href="'.$this->URL.'" class="'.$this->HTMLClasses().'" target="_blank" title="'.$this->Text.'">'.str_replace(array('http://','https://'),'',$this->URL).'</a>';
 	}
 
+<<<<<<< HEAD
 	protected function _providePermissionsArray($c=null){
 		if(!$c){$c = $this->class;};
 		$perms = array();
@@ -158,4 +191,11 @@ class LinkExternal extends DataObject{
 		return true;
 		//return Permission::check($this->class.'_VIEW');
 	}
+=======
+	public function canEdit(){return true;}
+	public function canCreate(){return true;}
+	public function canDelete(){return true;}
+	public function canPublish(){return true;}
+
+>>>>>>> 963a59a35be6c3fd530b40a2ae58207bc45d6d48
 }
